@@ -1,9 +1,12 @@
 {
   "version": 2,
-  "dgSpecHash": "JkmMp5FEwagfK/IwqJGfpCXjmJHcA/xMvCU9xy56vEaiMSwx7unft7q3GT7TTx+o3bpBEuBpLO4Px5M4rqItsA==",
+  "dgSpecHash": "0r56MiKrxht09qUMpbvJWY40Ms/BkhvghqWFA+svy/5kN2MJJS2cahrkwkp1QM9ML4F3NdUa9MXEyuVgDnZgvA==",
   "success": true,
-  "projectFilePath": "C:\\Home\\4c\\RutaArtesanal\\RutaArtesanal.Api\\RutaArtesanal.Api.csproj",
+  "projectFilePath": "D:\\Home\\RutaArtesanal1\\RutaArtesanal.Api\\RutaArtesanal.Api.csproj",
   "expectedPackageFiles": [
+    "C:\\Users\\Luiss\\.nuget\\packages\\automapper\\10.1.1\\automapper.10.1.1.nupkg.sha512",
+    "C:\\Users\\Luiss\\.nuget\\packages\\automapper.extensions.microsoft.dependencyinjection\\8.1.1\\automapper.extensions.microsoft.dependencyinjection.8.1.1.nupkg.sha512",
+    "C:\\Users\\Luiss\\.nuget\\packages\\fluentvalidation\\10.3.5\\fluentvalidation.10.3.5.nupkg.sha512",
     "C:\\Users\\Luiss\\.nuget\\packages\\humanizer.core\\2.8.26\\humanizer.core.2.8.26.nupkg.sha512",
     "C:\\Users\\Luiss\\.nuget\\packages\\microsoft.csharp\\4.7.0\\microsoft.csharp.4.7.0.nupkg.sha512",
     "C:\\Users\\Luiss\\.nuget\\packages\\microsoft.data.sqlclient\\2.0.1\\microsoft.data.sqlclient.2.0.1.nupkg.sha512",
@@ -71,7 +74,7 @@
     "C:\\Users\\Luiss\\.nuget\\packages\\system.private.datacontractserialization\\4.3.0\\system.private.datacontractserialization.4.3.0.nupkg.sha512",
     "C:\\Users\\Luiss\\.nuget\\packages\\system.private.uri\\4.3.2\\system.private.uri.4.3.2.nupkg.sha512",
     "C:\\Users\\Luiss\\.nuget\\packages\\system.reflection\\4.3.0\\system.reflection.4.3.0.nupkg.sha512",
-    "C:\\Users\\Luiss\\.nuget\\packages\\system.reflection.emit\\4.3.0\\system.reflection.emit.4.3.0.nupkg.sha512",
+    "C:\\Users\\Luiss\\.nuget\\packages\\system.reflection.emit\\4.7.0\\system.reflection.emit.4.7.0.nupkg.sha512",
     "C:\\Users\\Luiss\\.nuget\\packages\\system.reflection.emit.ilgeneration\\4.3.0\\system.reflection.emit.ilgeneration.4.3.0.nupkg.sha512",
     "C:\\Users\\Luiss\\.nuget\\packages\\system.reflection.emit.lightweight\\4.3.0\\system.reflection.emit.lightweight.4.3.0.nupkg.sha512",
     "C:\\Users\\Luiss\\.nuget\\packages\\system.reflection.extensions\\4.3.0\\system.reflection.extensions.4.3.0.nupkg.sha512",

@@ -1,108 +1,136 @@
+using System.Collections;
+using System.Data;
 using System.ComponentModel.DataAnnotations;
 using System;
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 using RutaArtesanal.Infrastructure.Repositories;
-using RutaArtesanal.Api.RutaArtesanal.Domain.Entities;
+using RutaArtesanal.Api.Domain;
 using RutaArtesanal.Domain.Dtos;
 using System.Linq;
-
-
+using QueryApi.Domain.Interfaces;
+using Microsoft.AspNetCore.Http;
+using RutaArtesanal.Api.Domain.Context;
+using QueryApi.Application.Services;
+using QueryApi.Domain.Dtos.Response;
+using QueryApi.Domain.Dtos.Requests;
+using AutoMapper;
+using FluentValidation;
 namespace RutaArtesanal.Api.Controllers
 {
+
+        
     [Route("api/[controller]")]
     [ApiController]
     public class ArtesanoController : ControllerBase
     {
-        [HttpGet]
-        [Route("")]
-        public IActionResult GetAll()
+        
+        private readonly IArtesanoRepository _repository;
+        private readonly IMapper _mapper;
+        private readonly IValidator<ArtesanoCreateRequest> _createValidator;
+        private readonly IHttpContextAccessor _httpContext;
+
+        public ArtesanoController(IHttpContextAccessor httpContext, IArtesanoRepository repository, IMapper mapper, IValidator<ArtesanoCreateRequest> CreateValidator)
         {
-            var repositorio = new ArtesanosSQLRepository();
-            var art = repositorio.GetAll();
-            var respuesta = art.Select(x =>CreateDTOFromObjects(x));
-            
+           _repository = repository;
+            this._mapper = mapper;
+            _createValidator = CreateValidator;
+            this._httpContext = httpContext;
+        }
+
+        [HttpGet]
+        [Route("")] 
+        public async Task<IActionResult> GetAll()
+        {
+            var artesanos = await _repository.GetAll();
+            var respuesta = _mapper.Map<IEnumerable<Personaartesano>,IEnumerable<ArtesanoResponse>>(artesanos);
             return Ok(respuesta);
         }
 
 
         [HttpGet]
-        [Route("Find")]
-        public IActionResult GetBuFilter(ArtesanoRequest artesano)
+        [Route("{id:int}")]
+        public async Task<IActionResult> GetById(int id)
         {
-            var repositorio = new ArtesanosSQLRepository();
-            var art = CreateObjctFromDTO(artesano);
-            var artesanos = repositorio.GetByFilter(art);
-            var respuesta = artesanos.Select(x =>CreateDTOFromObjects(x)
-            );
+            var artesano = await _repository.GetById(id);
+            if(artesano==null)
+                return NotFound("no se encontraron valores");
+
+            //var respuesta = CreateDTOFromObjects(artesano);
+            var respuesta = _mapper.Map<Personaartesano, ArtesanoResponse>(artesano);
             return Ok(respuesta);
-        }
-
-
-        public Artesano CreateObjctFromDTO(ArtesanoRequest dto)
-        {
-            var artesano = new Artesano{
-                Idartesano = dto.Idartesano,
-                Nombre = dto.Nombre,
-                Apellidop= string.Empty,
-                Apellidom= string.Empty,
-                Asociacion= dto.Asociacion,
-                Genero = dto.Genero,
-                Celular= string.Empty,
-                Email = dto.Email,
-                Contraseña = string.Empty,
-                Fechanacimiento = null,
-                Statusartesano = null
-            };
-
-            return artesano;
-        }
-
-        private ArtesanoResponse CreateDTOFromObjects(Artesano artesanos)
-        {
-            var dtos = new ArtesanoResponse{
-                Nombre = $"{artesanos.Nombre} {artesanos.Apellidop} {artesanos.Apellidom}",
-                Asociacion = artesanos.Asociacion,
-                Genero = artesanos.Genero,
-                Celular = artesanos.Celular,
-                Email = artesanos.Email,
-                Fechanacimiento = artesanos.Fechanacimiento
-
-            };
-
-            return dtos;
-        }
-
-
-         [HttpGet]
-        [Route("asociacion{asociaciones}")]
-        // Retornar elementos que sean de diferentes asociasiones
-        public IActionResult GetDistincJobs(string asociation)
-            {
-                var repositorio = new ArtesanosSQLRepository();
-                var artesanos = repositorio.GetAsociations(asociation);
-                
-            return Ok(artesanos);
-            } 
-
-            
-        //valores que contengan
-
-
-        [HttpGet]
-        [Route("word")]
-
-         public IActionResult GetStartWith(string word)
-        {
-            var repositorio = new ArtesanosSQLRepository();
-                var artesanos = repositorio.GetStartWith(word);
-                
-            return Ok(artesanos);
         } 
 
 
+         [HttpDelete]
+        [Route("Delete")]
+        public async Task<IActionResult> Delete(int id)
+        {
+            var artesano = await _repository.Delete(id);
+           
+            if(artesano==true)
+                return NotFound("no se encontraron valores");
+            
+            return NoContent();
+        } 
 
+        [HttpGet]
+        [Route("Find")]
+        public async Task<IActionResult> GetBuFilter(Personaartesano artesano)
+        {
+            //var artesan = CreateObjctFromDTO(artesano);
+            var artesanos = await _repository.GetByFilter(artesano);
+            //var respuesta = artesanos.Select(x =>CreateDTOFromObjects(x)
+            var respuesta = _mapper.Map<IEnumerable<Personaartesano>, IEnumerable<ArtesanoResponse>>(artesanos);
+            
+            return Ok(respuesta);
+        }
+
+
+
+
+
+        [HttpPost]
+        [Route("create")]
+        public async Task<IActionResult> Create([FromBody] ArtesanoCreateRequest artesano)
+        {
+            var ValidationResult = await _createValidator.ValidateAsync(artesano);
+            if(!ValidationResult.IsValid)
+                return UnprocessableEntity(ValidationResult.Errors.Select(x => $"Error: {x.ErrorMessage}"));
+
+            
+            var entity = _mapper.Map<ArtesanoCreateRequest, Personaartesano>(artesano);
+            var id = await _repository.Create(entity);
+           
+            if (id<=0)
+                return Conflict("el registro no puedo ser realizado");
+
+            var urlresult =$"https://{_httpContext.HttpContext.Request.Host.Value}/api/artesano/{id}";
+            return Created(urlresult, id);
+        }
+
+        [HttpPut]
+        [Route("update")]
+        public async Task<IActionResult> update(int id, [FromBody] Personaartesano artesano)
+        {
+            if(id <= 0)
+                NotFound("el registro no fue encontrado");
+
+            artesano.Idartesano=id;
+            var validations = ArtesanoService.ValidationUpdate(artesano);
+
+            if(!validations)
+                UnprocessableEntity("no es posible realizar la modificacion");
+           
+            var update = await _repository.Update(id, artesano);
+
+            if(!update)
+                return Conflict("hubo un conflictp al realizar los cambios");
+            return NoContent();
+        }
+        
+       
 
 
         
