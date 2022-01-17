@@ -1,2 +1,2 @@
 # RutaArtesanal
-Esta la base usada, asi como la presentacion
+Esta es la api correspondiente a una ruta artesanal
